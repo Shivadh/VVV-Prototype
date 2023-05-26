@@ -11,6 +11,19 @@ public class BoardManager : MonoBehaviour
     private Player player1;
     private Player player2;
 
+    public static BoardManager instance;
+
+    void Awake()
+    {
+        if(instance != null)
+        {
+            Destroy(instance);
+            return;
+        }
+
+        instance = this;
+    }
+
     private void Start()
     {
         player1 = GameObject.FindGameObjectWithTag("Player1").GetComponent<Player>();

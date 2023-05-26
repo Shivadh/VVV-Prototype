@@ -15,12 +15,12 @@ public class BoardMaker : MonoBehaviour
     public GameObject player1;
     public GameObject player2;
 
-    public GameObject ball;
+    private GameObject ball;
 
     public int numRows = 10;
     public int numColumns = 7;
 
-    public GameObject ballInstance;
+    public GameObject ballPrefab;
     private GameObject ballOwner;
 
     private GameObject currentPlayer;
@@ -59,14 +59,6 @@ public class BoardMaker : MonoBehaviour
             if (Physics.Raycast(ray, out hit) && clickedGround == null)
             {
                 GameObject selectedObject = hit.collider.gameObject;
-
-                Player player = selectedObject.GetComponent<Player>();
-                if (player != null)
-                {
-                    bool data = player.hasBall;
-
-                    Debug.Log("Selected player Data: " +  data);
-                }
                 
                 // Check if the selected object is a player belonging to the current player
                 if (selectedObject.CompareTag("Player1") || selectedObject.CompareTag("Player2"))
@@ -89,6 +81,12 @@ public class BoardMaker : MonoBehaviour
                 }
             }
 
+            if(clickedPlayer == null || clickedGround == null)
+            {
+                Debug.Log("No move made");
+                return;
+            }
+
             //clickedPlayer.transform.position = Vector3.MoveTowards(clickedPlayer.transform.position, clickedGround.transform.position, Time.deltaTime * 1f);
             clickedPlayer.transform.position = clickedGround.transform.position;
             movesRemaining--;
@@ -96,10 +94,12 @@ public class BoardMaker : MonoBehaviour
 
             // If the selected player is the ball owner, move the ball as well
 
-            //if (player.hasBall)
-            //{
-            //    MoveBall(clickedPlayer);
-            //}
+            Player player = clickedPlayer.GetComponent<Player>();
+            Debug.Log("Player at " + player.transform.position + " has ball : " + player.hasBall);
+            if (player.hasBall) {
+            
+               MoveBall(clickedPlayer);
+            }
 
             // Update moves remaining and switch players if no moves remaining
 
@@ -148,14 +148,12 @@ public class BoardMaker : MonoBehaviour
                 {
                     Vector3 position = new Vector3(col, 0.5f, row);
                     GameObject player1Instance = Instantiate(player1, position, Quaternion.identity);
-                    player1Instance.GetComponent<Player>().SetOwner(player1Instance);
                 }
 
                 if (row == 8 && col == 0 || row == 8 && col == 2 || row == 8 && col == 4 || row == 8 && col == 6)
                 {
                     Vector3 position = new Vector3(col, 0.5f, row);
                     GameObject player2Instance = Instantiate(player2, position, Quaternion.identity);
-                    player2Instance.GetComponent<Player>().SetOwner(player2Instance);
                 }
             }
 
@@ -193,11 +191,11 @@ public class BoardMaker : MonoBehaviour
             ballPosition = new Vector3(2, 0.6f, 8);
         }
 
-        ballInstance = Instantiate(ball, ballPosition, Quaternion.identity);
+        ball = Instantiate(ballPrefab, ballPosition, Quaternion.identity);
         ballOwner = player1;
 
-        ballInstance.GetComponent<Ball>().SetOwner(ballOwner);
-        ballInstance.transform.SetParent(ballOwner.transform);
+        ball.GetComponent<Ball>().SetOwner(ballOwner);
+        //ball.transform.SetParent(ballOwner.transform);
     }
 
     // Function to handle the movement of the ball
@@ -209,11 +207,11 @@ public class BoardMaker : MonoBehaviour
     // Function to handle the passing of the ball
     void PassBall(GameObject targetPlayer)
     {
-        if (ballInstance != null)
+        if (ball != null)
         {
             // Set the target player as the new ball owner
             ballOwner = targetPlayer;
-            ballInstance.GetComponent<Ball>().SetOwner(ballOwner);
+            ball.GetComponent<Ball>().SetOwner(ballOwner);
 
             MoveBall(ballOwner);
         }

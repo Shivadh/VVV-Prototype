@@ -18,10 +18,6 @@ public class Player : MonoBehaviour
     public bool isBlue;
 
 
-    public void SetOwner(GameObject owner)
-    {
-        Owner = owner;
-    }
      //Start is called before the first frame update
     void Start()
     {
@@ -30,12 +26,12 @@ public class Player : MonoBehaviour
         hasBall = false;
         
 
-        if ( Owner.transform.position == new Vector3(2f, 0.5f, 1f) )
+        if ( Vector3.Distance(transform.position, new Vector3(2f, 0.5f, 1f)) < 0.5f )
         {
+            Debug.Log("Player with ball at: " + transform.position);
             hasBall = true;
         }
 
-        
     }
 
     // Update is called once per frame

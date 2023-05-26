@@ -112,7 +112,7 @@ public class BoardMaker : MonoBehaviour
             clickedPlayer = null;
         }
 
-
+        //hehhehe
     }
 
     void CreateField()
